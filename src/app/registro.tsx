@@ -9,12 +9,12 @@ import {
   Modal, 
   Alert,
 } from 'react-native';
-import {useRouter} from 'expo-router'
-
+import {useRouter} from 'expo-router';
+import config from '../../config/config.json';
 const Cadastro = () => {
 
   // Armazenamento de dados
-  const [nomeUser, setNomeUser] = useState('');
+  const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
@@ -33,14 +33,14 @@ const Cadastro = () => {
   const [modalAtual, setModalAtual] = useState(1);
 
   const endCadastro = () => {
-    setModalVisible(false);
     Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+    setModalVisible(false);
     
   };
   const cancelCadastro = () =>{
+    Alert.alert('Cadastro cancelado');
     setModalVisible(false);
     router.replace(irRecepcao);
-    Alert.alert('Cadastro cancelado');
   };
 
 
@@ -49,7 +49,7 @@ const Cadastro = () => {
     if (nextModal > modalAtual) {
       switch (modalAtual) {
         case 1:
-          if (!nomeUser.trim()) {
+          if (!user.trim()) {
             Alert.alert('Validação', 'Por favor, insira um nome válido.');
             return;
           }
@@ -84,6 +84,22 @@ const Cadastro = () => {
     setModalAtual(nextModal);
   };
 
+  //Database
+  async function registerUser(){
+    let reqs = await fetch(config.urlRootNode + 'create', {
+      method: 'POST', 
+      headers:{
+        'Accept':'application/json',
+        'Content-type':'application/json',
+      },
+      body: JSON.stringify({
+        nomeUser: user,
+        senhaUser: senha,
+        emailUser: email,
+      })
+    }); 
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.botao} onPress={() => setModalVisible(true)}>
@@ -107,8 +123,8 @@ const Cadastro = () => {
                   autoCapitalize="words"
                   autoFocus={true}
                   placeholder="Nome"
-                  value={nomeUser}
-                  onChangeText={setNomeUser}
+                  value={user}
+                  onChangeText={(text)=>setUser(text)}
                 />
                 <View style={styles.navigation}>
                   {/* Removido o botão "Anterior" na primeira etapa */}
@@ -133,7 +149,7 @@ const Cadastro = () => {
                   autoFocus={true}
                   placeholder="E-mail"
                   value={email}
-                  onChangeText={setEmail}
+                  onChangeText={(text)=>setEmail(text)}
                 />
                 <View style={styles.navigation}>
                   <TouchableOpacity style={styles.botao} onPress={() => irPara(1)}>
@@ -156,7 +172,7 @@ const Cadastro = () => {
                   secureTextEntry={true}
                   placeholder="Senha"
                   value={senha}
-                  onChangeText={setSenha}
+                  onChangeText={(text)=>setSenha(text)}
                 />
                 <View style={styles.navigation}>
                   <TouchableOpacity style={styles.botao} onPress={() => irPara(2)}>
@@ -174,7 +190,7 @@ const Cadastro = () => {
                 <Text style={styles.title}>Confirme os Dados</Text>
                 {/*<Image source={iconConfirmar} style={styles.icon} />*/}
                 <View style={styles.cardStyle}>
-                  <Text style={styles.dados}>Nome: {nomeUser}</Text>
+                  <Text style={styles.dados}>Nome: {user}</Text>
                   <Text style={styles.dados}>E-mail: {email}</Text>
                   {/* Por segurança, não exibimos a senha */}
                 </View>
@@ -182,8 +198,8 @@ const Cadastro = () => {
                   <TouchableOpacity style={styles.botao} onPress={() => irPara(3)}>
                     <Text style={styles.txtbotao}>Editar</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.botao} onPress={endCadastro}>
-                    <Text style={styles.txtbotao}>Finalizar</Text>
+                  <TouchableOpacity style={styles.botao} onPress={registerUser, endCadastro}>
+                    <Text style={styles.txtbotao}>Enviar</Text>
                   </TouchableOpacity>
                 </View>
               </>

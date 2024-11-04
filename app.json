@@ -37,6 +37,13 @@
       "eas": {
         "projectId": "f58fd812-12ab-4052-bf22-6f3c38fd1f3d"
       }
+    },
+    "owner": "vicci22",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f58fd812-12ab-4052-bf22-6f3c38fd1f3d"
     }
   }
 }

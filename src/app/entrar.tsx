@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import config from '../../config/config.json'
 
 const Login = () => {
     //Armazenamento de dados
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [senha, setSenha] = useState('');
     
         //Controle de Formulario
             //Navegação
@@ -24,8 +25,33 @@ const Login = () => {
         router.replace('/home');
     };
 
-  const handleForgotPassword = () => {
+  const handleForgotsenha = () => {
     Alert.alert("Esqueci minha senha", "Redirecionando para recuperação de senha...");
+  };
+
+
+  //Database
+  async function doLogin(){
+    let reqs = await fetch(config.urlRootPhp + 'Controller.php', {
+      method: 'POST', 
+      headers:{
+        'Accept':'application/json',
+        'Content-type':'application/json',
+      },
+      body: JSON.stringify({
+        senhaUser: senha,
+        emailUser: email,
+      })
+    });
+    let ress = await reqs.json();
+    if(ress){
+      irHome();
+    }else{
+      //usuario ou senha ivalido
+      Alert.alert('Validação', 'usuário ou senha invalidos...');
+            return;
+    }
+
   };
 
   return (
@@ -54,19 +80,19 @@ const Login = () => {
           style={styles.input}
           placeholder="Senha"
           secureTextEntry
-          value={password}
-          onChangeText={setPassword}
+          value={senha}
+          onChangeText={setSenha}
           accessible={true}
           accessibilityLabel="Senha"
         />
       </View>
       <View>
-        <TouchableOpacity style={styles.button} onPress={irHome} accessible={true} accessibilityLabel="Entrar">
+        <TouchableOpacity style={styles.button} onPress={doLogin} accessible={true} accessibilityLabel="Entrar">
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleForgotPassword} accessible={true} accessibilityLabel="Esqueci minha senha">
-          <Text style={styles.forgotPassword}>Esqueci minha senha</Text>
+        <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Esqueci minha senha">
+          <Text style={styles.forgotsenha}>Esqueci minha senha</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -114,7 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  forgotPassword: {
+  forgotsenha: {
     color: '#007BFF',
     textAlign: 'center',
     marginTop: 10,
