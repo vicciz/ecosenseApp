@@ -86,11 +86,11 @@ const Cadastro = () => {
 
   //Database
   async function registerUser(){
-    let reqs = await fetch(config.urlRootNode + 'create', {
+    let reqs = await fetch(config.urlRootNode+'create', {
       method: 'POST', 
       headers:{
         'Accept':'application/json',
-        'Content-type':'application/json',
+        'Content-Type':'application/json',
       },
       body: JSON.stringify({
         nomeUser: user,
@@ -198,7 +198,7 @@ const Cadastro = () => {
                   <TouchableOpacity style={styles.botao} onPress={() => irPara(3)}>
                     <Text style={styles.txtbotao}>Editar</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.botao} onPress={registerUser, endCadastro}>
+                  <TouchableOpacity style={styles.botao} onPress={registerUser}>
                     <Text style={styles.txtbotao}>Enviar</Text>
                   </TouchableOpacity>
                 </View>
