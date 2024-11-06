@@ -49,7 +49,7 @@ const Login = () => {
     }else{
       //usuario ou senha ivalido
       Alert.alert('Validação', 'usuário ou senha invalidos...');
-            return;
+      return;
     }
 
   };

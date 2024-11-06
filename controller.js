@@ -14,12 +14,15 @@ app.post('//create',async(req,res)=>{
     let reqs = await model.User.create({
         'nome':req.body.nomeUser,
         'senha':req.body.senhaUser,
-        'email':re  .body.emailUser,
+        'email':req.body.emailUser,
         'createdAt':new Date(),
         'updatedAt':new Date()
         
     });
     console.log(req.body.nomeUser,req.body.emailUser,req.body.senhaeUser);
+    if(reqs){
+        res.send(JSON.stringify('O usuário foi cadastrado com sucesso!'));
+    };
 
 });
 

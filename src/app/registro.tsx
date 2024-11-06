@@ -17,6 +17,7 @@ const Cadastro = () => {
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [message,setMessage] = useState('');
 
   // Ícones/imagens usadas
   //const iconUser = require('@/assets/images/icon-identidade.png');
@@ -90,7 +91,7 @@ const Cadastro = () => {
       method: 'POST', 
       headers:{
         'Accept':'application/json',
-        'Content-Type':'application/json',
+        'Content-Type':'application/json'
       },
       body: JSON.stringify({
         nomeUser: user,
@@ -98,6 +99,8 @@ const Cadastro = () => {
         emailUser: email,
       })
     }); 
+    let ress=await reqs.json();
+    setMessage(ress);
   };
 
   return (
@@ -105,6 +108,10 @@ const Cadastro = () => {
       <TouchableOpacity style={styles.botao} onPress={() => setModalVisible(true)}>
         <Text style={styles.txtbotao}>Vamos Cadastrar</Text>
       </TouchableOpacity>
+
+      {message && (
+        <Text>{message}</Text>
+      )}
 
       <Modal
         animationType="slide"
