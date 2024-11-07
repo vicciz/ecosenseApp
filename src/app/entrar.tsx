@@ -43,8 +43,8 @@ const Login = () => {
         emailUser: email,
       })
     });
-    let ress = await reqs.json();
-    if(ress){
+    let res = await reqs.json();
+    if(res){
       irHome();
     }else{
       //usuario ou senha ivalido

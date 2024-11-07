@@ -38,12 +38,11 @@ const Cadastro = () => {
     setModalVisible(false);
     
   };
-  const cancelCadastro = () =>{
+  const cancelCadastro = () => {
     Alert.alert('Cadastro cancelado');
     setModalVisible(false);
     router.replace(irRecepcao);
   };
-
 
   const irPara = (nextModal : number) => {
     // Validações antes de avançar para a próxima etapa
@@ -99,8 +98,8 @@ const Cadastro = () => {
         emailUser: email,
       })
     }); 
-    let ress=await reqs.json();
-    setMessage(ress);
+    let res=await reqs.json();
+    setMessage(res);
   };
 
   return (
