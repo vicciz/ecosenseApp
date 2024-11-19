@@ -1,229 +1,172 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Image,
-  TextInput,
-  Modal, 
-  Alert,
-} from 'react-native';
-import {useRouter} from 'expo-router';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import config from '../../config/config.json';
-const Cadastro = () => {
+import Button from '../components/button';
 
+const CadastroFormulario = () => {
   // Armazenamento de dados
-  const [user, setUser] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [message,setMessage] = useState('');
 
-  // Ícones/imagens usadas
-  //const iconUser = require('@/assets/images/icon-identidade.png');
-  //const iconEmail = require('@/assets/images/icon-identidade.png');
-  //const iconSenha = require('@/assets/images/icon-senha.png');
-  //const iconConfirmar = require('@/assets/images/confirmar.png');
-
-  // Controle de Formulário
-  const router = useRouter();
-  const irRecepcao = "/recepcao";
-  const irHome = "/home";
-
+  // Controle do Modal
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalAtual, setModalAtual] = useState(1);
+  const [message, setMessage] = useState('');
 
-  const endCadastro = () => {
-    Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-    setModalVisible(false);
-    
-  };
-  const cancelCadastro = () => {
-    Alert.alert('Cadastro cancelado');
-    setModalVisible(false);
-    router.replace(irRecepcao);
-  };
-
-  const irPara = (nextModal : number) => {
-    // Validações antes de avançar para a próxima etapa
-    if (nextModal > modalAtual) {
-      switch (modalAtual) {
-        case 1:
-          if (!user.trim()) {
-            Alert.alert('Validação', 'Por favor, insira um nome válido.');
-            return;
-          }
-          break;
-        case 2:
-          if (!email.trim()) {
-            Alert.alert('Validação', 'Por favor, insira um email válido.');
-            return;
-          }
-          // Validação simples de email
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(email)) {
-            Alert.alert('Validação', 'Por favor, insira um email válido.');
-            return;
-          }
-          break;
-        case 3:
-          if (!senha) {
-            Alert.alert('Validação', 'Por favor, insira uma senha.');
-            return;
-          }
-          if (senha.length < 6) {
-            Alert.alert('Validação', 'A senha deve ter pelo menos 6 caracteres.');
-            return;
-          }
-          break;
-        default:
-          break;
-      }
+  const validarCadastro = () => {
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !senha.trim()) {
+      Alert.alert('Validação', 'Por favor, preencha todos os campos.');
+      return;
     }
 
-    setModalAtual(nextModal);
+    setModalVisible(true); // Exibe o modal para confirmação
   };
 
-  //Database
-  async function registerUser(){
-    let reqs = await fetch(config.urlRootNode+'create', {
-      method: 'POST', 
-      headers:{
-        'Accept':'application/json',
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify({
-        nomeUser: user,
-        senhaUser: senha,
-        emailUser: email,
-      })
-    }); 
-    let res=await reqs.json();
-    setMessage(res);
+  const cancelarCadastro = () => {
+    setModalVisible(false); // Fecha o modal
+  };
+
+  const confirmarCadastro = async () => {
+    try {
+      const response = await fetch(config.urlRootNode + 'create', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nomeUser: firstName,
+          sobrenomeUser: lastName,
+          emailUser: email,
+          senha: senha,
+        }),
+      });
+
+      const statusCode = response.status;
+      const contentType = response.headers.get('content-type');
+      const text = await response.text();
+
+      if (contentType && contentType.includes('application/json')) {
+        const data = JSON.parse(text);
+        setMessage(data.message || 'Cadastro realizado com sucesso!');
+      } else {
+        setMessage('Resposta inválida do servidor.');
+      }
+    } catch (error) {
+      console.error('Erro ao registrar usuário:', error);
+      setMessage('Erro ao conectar ao servidor.');
+    }
+    setModalVisible(false); // Fecha o modal
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.botao} onPress={() => setModalVisible(true)}>
-        <Text style={styles.txtbotao}>Vamos Cadastrar</Text>
-      </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.container}>
 
-      {message && (
-        <Text>{message}</Text>
-      )}
+      {message && <Text style={{color:'yellow', fontSize:18}}>{message}</Text>}
+      <Text>{firstName} {lastName} {email} {senha}</Text>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            {modalAtual === 1 && (
-              <>
-                <Text style={styles.title}>Informe o seu Nome</Text>
-                {/*<Image source={iconUser} style={styles.icon} />*/}
-                <TextInput
-                  style={styles.textbox}
-                  autoCapitalize="words"
-                  autoFocus={true}
-                  placeholder="Nome"
-                  value={user}
-                  onChangeText={(text)=>setUser(text)}
-                />
-                <View style={styles.navigation}>
-                  {/* Removido o botão "Anterior" na primeira etapa */}
-                  <TouchableOpacity style={styles.botao} onPress={(cancelCadastro) }>
-                    <Text style={styles.txtbotao}>Cancelar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.botao} onPress={() => irPara(2)}>
-                    <Text style={styles.txtbotao}>Próximo</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
+        <Text style={styles.title}>Preencha os campos para prosseguir </Text>
 
-            {modalAtual === 2 && (
-              <>
-                <Text style={styles.title}>O seu E-mail</Text>
-                {/*<Image source={iconEmail} style={styles.icon} />*/}
-                <TextInput
-                  style={styles.textbox}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoFocus={true}
-                  placeholder="E-mail"
-                  value={email}
-                  onChangeText={(text)=>setEmail(text)}
-                />
-                <View style={styles.navigation}>
-                  <TouchableOpacity style={styles.botao} onPress={() => irPara(1)}>
-                    <Text style={styles.txtbotao}>Anterior</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.botao} onPress={() => irPara(3)}>
-                    <Text style={styles.txtbotao}>Próximo</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
+        <TextInput
+          style={styles.input}
+          placeholder="Nome"
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Sobrenome"
+          value={lastName}
+          onChangeText={setLastName}
+        />
+        <TextInput
+          style={styles.input}
+          keyboardType="email-address"
+          placeholder="E-mail"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          secureTextEntry
+          placeholder="Senha"
+          autoCapitalize="none"
+          value={senha}
+          onChangeText={setSenha}
+        />
 
-            {modalAtual === 3 && (
-              <>
-                <Text style={styles.title}>Crie uma senha</Text>
-                {/*<Image source={iconSenha} style={styles.icon} />*/}
-                <Text style={styles.textAuxilio}>Lembre-se de criar uma senha forte:</Text>
-                <TextInput
-                  style={styles.textbox}
-                  secureTextEntry={true}
-                  placeholder="Senha"
-                  value={senha}
-                  onChangeText={(text)=>setSenha(text)}
-                />
-                <View style={styles.navigation}>
-                  <TouchableOpacity style={styles.botao} onPress={() => irPara(2)}>
-                    <Text style={styles.txtbotao}>Anterior</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.botao} onPress={() => irPara(4)}>
-                    <Text style={styles.txtbotao}>Próximo</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
+<Button
+  titulo="Avançar"
+  cor="#0056b3"
+  icone={null}
+  onPress={validarCadastro}
+/>
 
-            {modalAtual === 4 && (
-              <>
-                <Text style={styles.title}>Confirme os Dados</Text>
-                {/*<Image source={iconConfirmar} style={styles.icon} />*/}
-                <View style={styles.cardStyle}>
-                  <Text style={styles.dados}>Nome: {user}</Text>
-                  <Text style={styles.dados}>E-mail: {email}</Text>
-                  {/* Por segurança, não exibimos a senha */}
-                </View>
-                <View style={styles.navigation}>
-                  <TouchableOpacity style={styles.botao} onPress={() => irPara(3)}>
-                    <Text style={styles.txtbotao}>Editar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.botao} onPress={registerUser}>
-                    <Text style={styles.txtbotao}>Enviar</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
+<Modal
+  visible={modalVisible}
+  animationType="slide"
+  transparent={true}
+  onRequestClose={cancelarCadastro}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Cheque os seus dados</Text>
+      <Text style={styles.dados}>Nome: {firstName} {lastName}</Text>
+      <Text style={styles.dados}>E-mail: {email}</Text>
+      <Text style={styles.dados}>Senha: {senha}</Text>
+
+      <View style={styles.modalButtons}>
+        <Button
+          titulo="Cancelar"
+          cor="#0056b3"
+          icone={null}
+          onPress={cancelarCadastro}
+        />
+
+        <Button
+          titulo="Enviar"
+          cor="#0056b3"
+          icone={null}
+          onPress={confirmarCadastro}
+        />
+      </View>
     </View>
+  </View>
+</Modal>
+
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#2196F3',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color:'#fff',
+    textAlign: 'center'
+    
+  },
+  input: {
+    height: 50,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    width: '100%',
   },
   botao: {
     backgroundColor: '#6200EE',
@@ -231,7 +174,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 5,
     marginVertical: 10,
-    marginHorizontal: 6, 
     maxWidth: 320,
     alignItems: 'center',
   },
@@ -240,60 +182,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  modalBackground: {
+  modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fundo semi-transparente
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  modalContainer: {
-    width: '90%',
-    backgroundColor: 'white',
-    borderRadius: 10,
+  modalContent: {
+    backgroundColor: '#FFF',
     padding: 20,
-    elevation: 20,
-  },
-  icon: {
-    width: 80,
-    height: 80,
-    alignSelf: 'center',
-    marginVertical: 10,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 20,
-    textAlign: 'center',
-    marginVertical: 10,
-  },
-  textAuxilio: {
-    fontSize: 14,
-    color: '#444',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  textbox: {
-    borderWidth: 1,
-    borderColor: '#6200EE',
-    padding: 10,
-    width: '100%',
-    borderRadius: 5,
-    marginVertical: 10,
-  },
-  navigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    borderRadius: 10,
+    width: '80%',
     alignItems: 'center',
-    marginTop: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
   },
   dados: {
     fontSize: 16,
-    marginVertical: 2,
+    marginVertical: 5,
   },
-  cardStyle: {
-    padding: 15,
-    marginVertical: 10,
-    backgroundColor: '#F5F5F5',
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
 });
 
-export default Cadastro;
+export default CadastroFormulario;

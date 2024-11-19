@@ -20,6 +20,6 @@
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
-  "urlRootNode": "http://localhost:8081/",
-  "urlRootPhp": "http://localhost:80/"
+  "urlRootNode":"http://10.0.0.226:8081/",
+  "urlRootPhp":"http://10.0.0.226:80/"
 }

@@ -3,32 +3,34 @@ import {
   Text,
   View,
   Image,
-  Pressable,
+  TouchableOpacity,
   StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
 const Button = ({ 
-  titulo, 
+  titulo,
+  onPress,
   cor = '#007BFF', 
   desabilitado = false, 
-  icone = null, 
+  icone = null,
   estiloIcone = {}, 
   estiloTitulo = {},
 
 }) => {
   return (
     <View>
-        <Pressable
+        <TouchableOpacity
           style={[styles.botao, { backgroundColor: cor }]}
           disabled={desabilitado}
-          activeOpacity = {0.7}
+          activeOpacity = {0.9}
+          onPress={onPress}
         >
           {icone && (
             <Image source={icone} style={[styles.icone, estiloIcone]} resizeMode="contain" />
           )}
           <Text style={[styles.titulo, estiloTitulo]}> {titulo} </Text>
-        </Pressable>
+        </TouchableOpacity>
 
     </View>
   );
@@ -45,7 +47,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     elevation: 5,
     width: 150,
-    height: 60,
+    height: 300,
     maxWidth: 150,
     maxHeight: 80,
   },
@@ -56,9 +58,8 @@ const styles = StyleSheet.create({
   },
   titulo: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '600',
-    padding: 10,
   },
 });
 
@@ -69,6 +70,7 @@ Button.propTypes = {
   icone: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   estiloTitulo: PropTypes.object,
   estiloIcone: PropTypes.object,
+  onPress:PropTypes.func.isRequired,
 
 };
 

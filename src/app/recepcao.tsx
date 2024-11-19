@@ -1,10 +1,11 @@
 import React from 'react';
 import { Text, SafeAreaView, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Button from '../components/button';
-import {Link} from 'expo-router';
+import {useRouter} from 'expo-router';
+
 const Recepcao = () =>{
   //const logo = require('@/assets/images/logoexample.png'); // Update the path to your logo
-
+  const router = useRouter();
   const irRegistro = '/registro';
   const irEntrar = '/entrar';
 
@@ -23,20 +24,19 @@ const Recepcao = () =>{
           <Text style={styles.textoBv}>Seja bem-vindo,{'\n'} faça login ou cadastre-se</Text>
         </View>
         <View style={styles.navigation}>
-          <Link push href={irRegistro}>
             <Button
               titulo='Cadastrar'
-              cor='red'
+              cor='#0056b3'
               icone= {null}
-            />
-          </Link>
-          <Link push href={irEntrar}> 
+              onPress={() => router.push(irRegistro)}
+            /> 
             <Button
               titulo='Entrar'
-              cor='green'
+              cor='#21bf9f'
               icone= {null}
+              onPress={() => router.push(irEntrar)}
             />
-          </Link>
+
         </View>
       </View>
     </SafeAreaView>
@@ -48,12 +48,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'blue',
+    backgroundColor: '#2196F3',
     padding: 8,
   },
   conteinerTitulo: {
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   conteinerImage: {
     marginBottom: 20,
@@ -66,6 +67,8 @@ const styles = StyleSheet.create({
     fontSize: 23,
     textAlign: 'center',
     color:'white',
+    fontWeight: 'bold',
+
   },
 
   navigation: {
