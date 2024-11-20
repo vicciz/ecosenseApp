@@ -27,45 +27,29 @@ const CadastroFormulario = () => {
     setModalVisible(false); // Fecha o modal
   };
 
-  const confirmarCadastro = async () => {
-    try {
-      const response = await fetch(config.urlRootNode + 'create', {
+  async function registro() {
+      let reqs = await fetch(config.urlRootNode+'create',{
         method: 'POST',
         headers: {
-          Accept: 'application/json',
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nomeUser: firstName,
-          sobrenomeUser: lastName,
-          emailUser: email,
+          nome: firstName,
+          sobrenome: lastName,
+          email: email,
           senha: senha,
         }),
       });
-
-      const statusCode = response.status;
-      const contentType = response.headers.get('content-type');
-      const text = await response.text();
-
-      if (contentType && contentType.includes('application/json')) {
-        const data = JSON.parse(text);
-        setMessage(data.message || 'Cadastro realizado com sucesso!');
-      } else {
-        setMessage('Resposta inválida do servidor.');
-      }
-    } catch (error) {
-      console.error('Erro ao registrar usuário:', error);
-      setMessage('Erro ao conectar ao servidor.');
-    }
-    setModalVisible(false); // Fecha o modal
+      let ress=await reqs.json();
+      setMessage(ress);
   };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
 
-      {message && <Text style={{color:'yellow', fontSize:18}}>{message}</Text>}
-      <Text>{firstName} {lastName} {email} {senha}</Text>
+      {message && <Text style={{color:'yellow', fontSize:18}}>{JSON.stringify(message)}</Text>}
 
         <Text style={styles.title}>Preencha os campos para prosseguir </Text>
 
@@ -73,13 +57,13 @@ const CadastroFormulario = () => {
           style={styles.input}
           placeholder="Nome"
           value={firstName}
-          onChangeText={setFirstName}
+          onChangeText={(text)=>setFirstName(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Sobrenome"
           value={lastName}
-          onChangeText={setLastName}
+          onChangeText={(text)=>setLastName(text)}
         />
         <TextInput
           style={styles.input}
@@ -87,7 +71,7 @@ const CadastroFormulario = () => {
           placeholder="E-mail"
           autoCapitalize="none"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text)=>setEmail(text)}
         />
         <TextInput
           style={styles.input}
@@ -95,7 +79,7 @@ const CadastroFormulario = () => {
           placeholder="Senha"
           autoCapitalize="none"
           value={senha}
-          onChangeText={setSenha}
+          onChangeText={(text)=>setSenha(text)}
         />
 
 <Button
@@ -130,7 +114,7 @@ const CadastroFormulario = () => {
           titulo="Enviar"
           cor="#0056b3"
           icone={null}
-          onPress={confirmarCadastro}
+          onPress={registro}
         />
       </View>
     </View>
