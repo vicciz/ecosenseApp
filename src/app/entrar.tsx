@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity,Keyboard, StyleSheet, Alert } f
 import { useRouter } from 'expo-router';
 import config from '../../config/config.json';
 import Button from '../components/button';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Login = () => {
   const [email, setEmail] = useState('');
