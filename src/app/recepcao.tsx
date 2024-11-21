@@ -4,22 +4,18 @@ import Button from '../components/button';
 import {useRouter} from 'expo-router';
 
 const Recepcao = () =>{
-  //const logo = require('@/assets/images/logoexample.png'); // Update the path to your logo
   const router = useRouter();
   const irRegistro = '/registro';
   const irEntrar = '/entrar';
+  const logo = require('../assets/logoClaro.png');
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.conteinerTitulo}>
-        {/*<View style={styles.conteinerImage}>
-          <Image style={{
-            width: 150, // Adjust as needed
-            height: 150, // Adjust as needed
-            borderRadius:"100%", 
-          }} source={logo}/>
+        <View style={styles.conteinerImage}>
+          <Image style={styles.logo} source={logo}/>
         </View>
-        */}
+        
         <View style={styles.conteinerText}>
           <Text style={styles.textoBv}>Seja bem-vindo,{'\n'} faça login ou cadastre-se</Text>
         </View>
@@ -74,6 +70,11 @@ const styles = StyleSheet.create({
   navigation: {
     flexDirection: 'row',
     width: '100%', // Adjust width as needed
+  },
+  logo:{
+    width: 150, // Adjust as needed
+    height: 150, // Adjust as needed
+    borderRadius:100,
   },
 });
 export default Recepcao;

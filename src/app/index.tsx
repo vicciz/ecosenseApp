@@ -16,8 +16,6 @@ const Index = () => {
   }, [isMounted]);
 
 
-
-
   return null;
 };
 

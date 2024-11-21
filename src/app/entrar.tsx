@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity,Keyboard, StyleSheet, Alert } f
 import { useRouter } from 'expo-router';
 import config from '../../config/config.json';
 import Button from '../components/button';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,7 +11,7 @@ const Login = () => {
   const [message,setMessage] = useState('');
   const router = useRouter();
 
-  const autenticarUsuario = async () => {
+ async function doLogin(){
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // Validação do email
@@ -20,31 +21,33 @@ const Login = () => {
     }
 
     // Enviar requisição para o servidor
-    try {
-      const response = await fetch(`${config.urlRootPhp}controller.php`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          senhaUser: senha,
-          emailUser: email,
-        }),
-      });
-      Keyboard.dismiss();
-
-      const resultado = await response.json();
-
-      if (resultado) {
-        // Navegação para a tela 'Home'
-        router.replace('/home');
-      } else {
-        Alert.alert('Validação', 'Usuário ou senha inválidos.');
+    let reqs = await fetch(config.urlRootPhp+'controller.php',{
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        senha: senha,
+      }),
+    });
+    let ress = await reqs.json();
+    Keyboard.dismiss();
+    if(ress){
+      setMessage('Entrada validada com sucesso!!!');
+      router.replace('/home')
+    }else{
+      setMessage('Usuário ou senha inválidos');
+      setTimeout(()=>{
+        setMessage('');
+      },5000);
+      await  AsyncStorage.Clear();
+      else{
+        let usuarioData=await AsyncStorage.setItem('usuarioData'.JSON.stringify(json));
+        let resData=await AsyncStorage.getItem(usuarioData);
+        console.log(JSON.parse(resData));
       }
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível autenticar. Tente novamente.');
-      console.error(error);
     }
   };
 
@@ -54,6 +57,7 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+       {message && <Text style={{color:'yellow', fontSize:18}}>{JSON.stringify(message)}</Text>}
       <View>
         <Text style={styles.title}>Insira os Dados Cadastrados</Text>
       </View>
@@ -62,8 +66,9 @@ const Login = () => {
           style={styles.input}
           placeholder="Email"
           keyboardType="email-address"
+          autoCapitalize="none"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text)=>setEmail(text)}
           accessible={true}
           accessibilityLabel="Email"
         />
@@ -71,9 +76,10 @@ const Login = () => {
         <TextInput
           style={styles.input}
           placeholder="Senha"
-          secureTextEntry
+          secureTextEntry={true}
+          autoCapitalize="none"
           value={senha}
-          onChangeText={setSenha}
+          onChangeText={(text)=>setSenha(text)}
           accessible={true}
           accessibilityLabel="Senha"
         />
@@ -83,11 +89,14 @@ const Login = () => {
           titulo="Entrar"
           cor="#0056b3"
           icone={null}
-          onPress={autenticarUsuario}
+          onPress={doLogin}
         />
 
         <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Esqueci minha senha">
           <Text style={styles.forgotsenha}>Esqueci minha senha</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Não possuo conta">
+          <Text style={styles.forgotsenha}>Não possuo conta</Text>
         </TouchableOpacity>
       </View>
     </View>

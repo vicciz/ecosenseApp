@@ -100,7 +100,6 @@ const CadastroFormulario = () => {
       <Text style={styles.modalTitle}>Cheque os seus dados</Text>
       <Text style={styles.dados}>Nome: {firstName} {lastName}</Text>
       <Text style={styles.dados}>E-mail: {email}</Text>
-      <Text style={styles.dados}>Senha: {senha}</Text>
 
       <View style={styles.modalButtons}>
         <Button

@@ -11,10 +11,6 @@ app.use(bodyParser.json());
 
 // Routes
 app.post('/create',async(req, res) => {
-  console.log(req.body.nomeUser);
-  console.log(req.body.sobrenomeUser);
-  console.log(req.body.email);
-  console.log(req.body.senha);
     try {
       let reqs = await models.Usuario.create({
         'nome': req.body.nome,
@@ -33,9 +29,8 @@ app.post('/create',async(req, res) => {
     }
   });
   
-
-// Start server
-let port = process.env.PORT || 3000;
-app.listen(port,(req,res) => {
-    console.log('Servidor rodando');
-});
+    // Start server
+    let port = process.env.PORT || 3000;
+    app.listen(port,(req,res) => {
+        console.log('Servidor rodando');
+    });

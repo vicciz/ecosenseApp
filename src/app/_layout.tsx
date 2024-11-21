@@ -46,6 +46,14 @@ export default function RootLayout() {
           headerTintColor: '#fff',
         }}
       />
+      <Stack.Screen
+        name="perfil"
+        options={{
+          headerTitle: 'Perfil',
+          headerStyle: { backgroundColor: '#2196F3' },
+          headerTintColor: '#fff',
+        }}
+      />
       
     </Stack>
   );
