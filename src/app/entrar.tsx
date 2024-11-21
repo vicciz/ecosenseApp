@@ -1,27 +1,34 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity,Keyboard, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Keyboard, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import config from '../../config/config.json';
 import Button from '../components/button';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Tipos para os estados
+interface LoginState {
+  email: string | null;
+  senha: string | null;
+  message: string | null;
+}
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [message,setMessage] = useState('');
+  const [email, setEmail] = useState<string | null>(null);
+  const [senha, setSenha] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
 
- async function doLogin(){
+  async function doLogin() {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // Validação do email
-    if (!emailPattern.test(email)) {
+    if (email && !emailPattern.test(email)) {
       Alert.alert('Erro', 'Por favor, insira um email válido.');
       return;
     }
 
     // Enviar requisição para o servidor
-    let reqs = await fetch(config.urlRootPhp+'controller.php',{
+    let reqs = await fetch(config.urlRootPhp + 'controller.php', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -32,32 +39,32 @@ const Login = () => {
         senha: senha,
       }),
     });
+
     let ress = await reqs.json();
     Keyboard.dismiss();
-    if(ress){
-      setMessage('Entrada validada com sucesso!!!');
-      router.replace('/home')
-    }else{
-      setMessage('Usuário ou senha inválidos');
-      setTimeout(()=>{
-        setMessage('');
-      },5000);
-      await  AsyncStorage.Clear();
-      else{
-        let usuarioData=await AsyncStorage.setItem('usuarioData'.JSON.stringify(json));
-        let resData=await AsyncStorage.getItem(usuarioData);
-        console.log(JSON.parse(resData));
-      }
-    }
-  };
 
+    if (ress) {
+      // Armazenar dados do usuário
+      const json = { email, senha };  // A variável `json` precisa ser definida
+      await AsyncStorage.setItem('userData', JSON.stringify(json));
+      router.replace('/home');
+    } else {
+      setMessage('Usuário ou senha inválidos');
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+      await AsyncStorage.clear();
+    }
+  }
+
+  // Função para lidar com o esqueci minha senha
   const handleForgotsenha = () => {
     Alert.alert('Esqueci minha senha', 'Redirecionando para recuperação de senha...');
   };
 
   return (
     <View style={styles.container}>
-       {message && <Text style={{color:'yellow', fontSize:18}}>{JSON.stringify(message)}</Text>}
+      {message && <Text style={{ color: 'yellow', fontSize: 18 }}>{JSON.stringify(message)}</Text>}
       <View>
         <Text style={styles.title}>Insira os Dados Cadastrados</Text>
       </View>
@@ -67,8 +74,8 @@ const Login = () => {
           placeholder="Email"
           keyboardType="email-address"
           autoCapitalize="none"
-          value={email}
-          onChangeText={(text)=>setEmail(text)}
+          onChangeText={(text) => setEmail(text)}
+          value={email || ''}
           accessible={true}
           accessibilityLabel="Email"
         />
@@ -78,8 +85,8 @@ const Login = () => {
           placeholder="Senha"
           secureTextEntry={true}
           autoCapitalize="none"
-          value={senha}
-          onChangeText={(text)=>setSenha(text)}
+          onChangeText={(text) => setSenha(text)}
+          value={senha || ''}
           accessible={true}
           accessibilityLabel="Senha"
         />
