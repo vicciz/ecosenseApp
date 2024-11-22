@@ -12,8 +12,41 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Navbar from '../components/navbar';
+import config from '../../config/config.json';
+
+// Função para registrar o aparelho no backend
+async function registrarAparelho(
+  nomeAparelho: string,
+  tipoAparelho: string,
+  voltagemAparelho: string,
+  potenciaAparelho: string
+) {
+  let reqs = await fetch(config.urlRootPhp + 'Controller2.php', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: nomeAparelho,
+      tipo: tipoAparelho,
+      voltagem: voltagemAparelho,
+      potencia: potenciaAparelho,
+      idUser: 1, // idUser fixo ou pode vir de outro contexto
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }),
+  });
+
+  let ress = await reqs.json();
+
+  if (ress) {
+    alert('Aparelho registrado com sucesso!');
+  }
+}
 
 const TelaDispositivos = () => {
+  // Definindo o tipo para os aparelhos
   interface Aparelho {
     id: string;
     nome: string;
@@ -27,12 +60,14 @@ const TelaDispositivos = () => {
     { id: '3', nome: 'Micro-ondas', voltagem: '110V', tipo: 'Eletrodoméstico' },
   ]);
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [nomeAparelho, setNomeAparelho] = useState('');
-  const [tipoAparelho, setTipoAparelho] = useState('Eletrodoméstico');
-  const [voltagemAparelho, setVoltagemAparelho] = useState('110V');
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [nomeAparelho, setNomeAparelho] = useState<string>('');
+  const [tipoAparelho, setTipoAparelho] = useState<string>('Eletrodoméstico');
+  const [voltagemAparelho, setVoltagemAparelho] = useState<string>('110V');
+  const [potenciaAparelho, setPotenciaAparelho] = useState<string>('');
   const [aparelhoAtual, setAparelhoAtual] = useState<string | null>(null);
 
+  // Função para abrir o modal de cadastro
   const abrirModalCadastro = (aparelho: Aparelho | null = null) => {
     if (aparelho) {
       setNomeAparelho(aparelho.nome);
@@ -48,6 +83,7 @@ const TelaDispositivos = () => {
     setModalVisible(true);
   };
 
+  // Função para salvar o aparelho
   const salvarAparelho = () => {
     if (aparelhoAtual) {
       setAparelhos((prev) =>
@@ -64,12 +100,15 @@ const TelaDispositivos = () => {
       ]);
     }
     setModalVisible(false);
+    registrarAparelho(nomeAparelho, tipoAparelho, voltagemAparelho, potenciaAparelho);
   };
 
+  // Função para excluir aparelho
   const excluirAparelho = (id: string) => {
     setAparelhos((prev) => prev.filter((ap) => ap.id !== id));
   };
 
+  // Renderizando os itens da lista de aparelhos
   const renderItem = ({ item }: { item: Aparelho }) => (
     <View style={styles.card}>
       <Text style={styles.title}>{item.nome}</Text>
@@ -85,16 +124,13 @@ const TelaDispositivos = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Aparelhos Cadastrados</Text>
-      <FlatList
-        data={aparelhos}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      <FlatList data={aparelhos} renderItem={renderItem} keyExtractor={(item) => item.id} />
       <TouchableOpacity style={styles.botao} onPress={() => abrirModalCadastro()}>
         <Text style={styles.btnText}>Adicionar Novo Aparelho</Text>
-        <Navbar activeRoute={"/aparelhos"}/>
+        <Navbar activeRoute={"/aparelhos"} />
       </TouchableOpacity>
 
+      {/* Modal de Cadastro de Aparelho */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -120,6 +156,13 @@ const TelaDispositivos = () => {
             <Picker.Item label="220V" value="220V" />
             <Picker.Item label="BiVolt" value="BiVolt" />
           </Picker>
+          <Text>Potência:</Text>
+          <TextInput
+            style={styles.textbox}
+            placeholder="Potência do Aparelho"
+            value={potenciaAparelho}
+            onChangeText={setPotenciaAparelho}
+          />
           <View style={styles.buttonContainer}>
             <Button title="Cancelar" onPress={() => setModalVisible(false)} />
             <Button title="Salvar" onPress={salvarAparelho} />
