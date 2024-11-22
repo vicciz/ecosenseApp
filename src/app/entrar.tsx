@@ -46,7 +46,7 @@ const Login = () => {
     if (ress) {
       // Armazenar dados do usuário
       const json = { email, senha };  // A variável `json` precisa ser definida
-      await AsyncStorage.setItem('userData', JSON.stringify(json));
+      await AsyncStorage.setItem('usuarioData', JSON.stringify(json));
       router.replace('/home');
     } else {
       setMessage('Usuário ou senha inválidos');
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   forgotsenha: {
-    color: '#007BFF',
+    color: 'yellow',
     textAlign: 'center',
     marginTop: 10,
     textDecorationLine: 'underline',
