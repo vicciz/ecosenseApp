@@ -1,59 +1,57 @@
-import {React, useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   View,
-  Image,
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Header = () => {
-  //const logo = require('@/assets/images/logoexample.png');
-  //const iconConfig = require('@/assets/images/configuracao.png');
-  //const iconDuvida = require('@/assets/images/socorro.png');
-  const [userName, setUserName] = useState('');
+  const [usuario, setUsuario] = useState(null);
+
+  useEffect(() => {
+    async function getUsuario() {
+      const response = await AsyncStorage.getItem('usuarioData');
+      if (response) {
+        const json = JSON.parse(response);
+        setUsuario(json); // Atribuir todos os dados ao estado de uma vez
+      }
+    }
+    getUsuario();
+  }, []); // useEffect será chamado apenas uma vez após o componente ser montado
+
+  const userName = usuario ? usuario.nome : 'Usuário'; // Verificar se o usuário existe para exibir o nome
+
   const handleDuvidaPress = () => {
-    // Navigate to help screen or show help modal
     console.log('Ícone de dúvida pressionado');
   };
 
   const handleConfigPress = () => {
-    // Navigate to settings screen
     console.log('Ícone de configuração pressionado');
   };
 
   return (
     <View style={styles.containerHeader}>
-      {/* Agrupa Logo e Texto em uma coluna */}
       <View style={styles.logoAndMessageContainer}>
-        {/*<Image source={logo} style={styles.logo} />*/}
         <Text style={styles.welcomeText}>Seja bem-vindo, {userName}</Text>
       </View>
 
-      {/* Ícones à direita */}
       <View style={styles.containerIcon}>
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={handleDuvidaPress} 
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleDuvidaPress}
           accessibilityRole="button"
           accessibilityLabel="Ícone de dúvida"
         >
-          {/*}<Image
-            source={iconDuvida}
-            style={[styles.icon, styles.iconDuvida]}
-          />*/}
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={handleConfigPress} 
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleConfigPress}
           accessibilityRole="button"
           accessibilityLabel="Ícone de configuração"
         >
-          {/*<Image
-            source={iconConfig}
-            style={[styles.icon, styles.iconConfig]}
-          />*/}
         </TouchableOpacity>
       </View>
     </View>
@@ -74,13 +72,6 @@ const styles = StyleSheet.create({
   logoAndMessageContainer: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-  },
-  logo: {
-    width: 60,
-    height: 60,
-    resizeMode: 'contain',
-    borderRadius: 30,
-    marginBottom: 20,
   },
   welcomeText: {
     color: '#fff',
