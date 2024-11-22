@@ -58,7 +58,13 @@ const Perfil = () => {
           Alterar Idioma
         </TouchableOpacity>
         <TouchableOpacity style={styles.btn}>
+          Alterar Foto
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btn}>
           Alterar Senha
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btn}>
+          Sair
         </TouchableOpacity>
       </View>
       <Navbar activeRoute="/perfil" />
