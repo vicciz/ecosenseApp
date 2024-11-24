@@ -15,7 +15,7 @@ interface LoginState {
 const Login = () => {
   const [email, setEmail] = useState<string | null>(null);
   const [senha, setSenha] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState('');
   const router = useRouter();
 
   async function doLogin() {
@@ -28,7 +28,7 @@ const Login = () => {
     }
 
     // Enviar requisição para o servidor
-    let reqs = await fetch(config.urlRootPhp + 'controller.php', {
+    let req = await fetch(config.urlRootNode +'login', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -40,21 +40,22 @@ const Login = () => {
       }),
     });
 
-    let ress = await reqs.json();
+    let res = await req.json();
     Keyboard.dismiss();
 
-    if (ress) {
-      // Armazenar dados do usuário
-      const json = { email, senha };  // A variável `json` precisa ser definida
-      await AsyncStorage.setItem('usuarioData', JSON.stringify(json));
+    if ( res) {
+      let usuarioData =await AsyncStorage.setItem('usuarioData', JSON.stringify(res));
+      let resData=await AsyncStorage.getItem('usuarioData');
+      setMessage(res);
       router.replace('/home');
-    } else {
-      setMessage('Usuário ou senha inválidos');
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+      console.log(res);
+    }else{
       await AsyncStorage.clear();
-    }
+        setMessage(res);
+        setTimeout(() => {
+          setMessage('');
+        }, 5000);
+      }
   }
 
   // Função para lidar com o esqueci minha senha
