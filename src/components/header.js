@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -22,7 +23,7 @@ const Header = () => {
   }, []); // useEffect será chamado apenas uma vez após o componente ser montado
 
   const userName = usuario ? usuario.nome : 'Usuário'; // Verificar se o usuário existe para exibir o nome
-
+  const logo = require('./../assets/logoClaro.png');
   const handleDuvidaPress = () => {
     console.log('Ícone de dúvida pressionado');
   };
@@ -33,7 +34,9 @@ const Header = () => {
 
   return (
     <View style={styles.containerHeader}>
+
       <View style={styles.logoAndMessageContainer}>
+      <Image style={styles.logo} source={logo}/>
         <Text style={styles.welcomeText}>Seja bem-vindo, {userName}</Text>
       </View>
 
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     color: '#fff',
-    fontSize: 24,
+    fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'left',
   },
@@ -86,9 +89,9 @@ const styles = StyleSheet.create({
     padding: 10,
     marginLeft: 10,
   },
-  icon: {
-    width: 24,
-    height: 24,
+  logo: {
+    width: 80,
+    height: 80,
   },
   iconDuvida: {
     tintColor: 'white',

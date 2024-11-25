@@ -14,18 +14,11 @@ import Navbar from '../components/navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from './../../config/config.json';
 
-// Tipagem para os dados do usuário
-interface Usuario {
-  id: string;
-  nome: string;
-  sobrenome: string;
-  email: string;
-  createdAt: string;
-}
-
 const Perfil: React.FC = () => {
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
-  const [idUser, setIdUser] = useState<string>('');
+  const [nome, setNome] = useState('');
+  const [sobrenome, setSobrenome] = useState('');
+  const [idUser, setIdUser] = useState('');
+  const [email, setEmail] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [senhaAntiga, setSenhaAntiga] = useState<string>('');
   const [novaSenha, setNovaSenha] = useState<string>('');
@@ -38,20 +31,18 @@ const Perfil: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userResponse = await AsyncStorage.getItem('usuarioData');
-        const idResponse = userResponse;
-
-        if (userResponse) {
-          const usuarioData: Usuario = JSON.parse(userResponse);
-          setUsuario(usuarioData);
-        }
-
-        if (idResponse) {
-          const idData = JSON.parse(idResponse);
-          setIdUser(idData.id);
+        const response = await AsyncStorage.getItem('usuarioData');
+        if (response) {
+          const json = JSON.parse(response);
+          setIdUser(json.id || '');
+          setNome(json.nome || '');
+          setSobrenome(json.sobrenome || '');
+          setEmail(json.email || '');
+        } else {
+          console.log('Nenhum dado encontrado no AsyncStorage.');
         }
       } catch (error) {
-        console.error('Erro ao carregar dados do usuário:', error);
+        console.error('Erro ao recuperar dados do AsyncStorage:', error);
       }
     };
 
@@ -75,6 +66,9 @@ const Perfil: React.FC = () => {
     } catch (error) {
       Alert.alert('Erro', 'Falha ao conectar com o servidor.');
     }
+  };
+  const alterarSenhaTela =() =>{
+    setModalVisible(true);
   };
 
   const updatePassword = async (): Promise<void> => {
@@ -100,12 +94,12 @@ const Perfil: React.FC = () => {
 
     try {
       const response = await fetch(`${config.urlRootNode}verifyPass`, {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: idUser,
-          senhaAntiga,
-          novaSenha,
+          senhaAntiga: senhaAntiga,
+          novaSenha: novaSenha,
         }),
       });
 
@@ -140,41 +134,30 @@ const Perfil: React.FC = () => {
         source={imgUser}
         resizeMode="cover"
       />
-      {usuario ? (
-        <>
-          <Text style={styles.nmUser}>
-            {usuario.id}
-            {usuario.nome} {usuario.sobrenome}
-          </Text>
-          <Text style={styles.nmUser}>
-            Email Cadastrado: {usuario.email}
-          </Text>
-        </>
-      ) : (
-        <Text style={styles.nmUser}>Carregando...</Text>
-      )}
+      <>
+        <Text style={styles.nmUser}>
+          {idUser}
+          {nome} {sobrenome}
+        </Text>
+        <Text style={styles.nmUser}>
+          {email}
+        </Text>
+      </>
 
-      <View>
-        <TouchableOpacity style={styles.btn}>
-          <Text>Modo Escuro</Text>
+      <View style={styles.optionsContainer}>
+        <TouchableOpacity style={styles.optionButton}>
+          <Text style={styles.optionText}>Alterar Tema</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btn}>
-          <Text>Alterar Idioma</Text>
+
+        <TouchableOpacity style={styles.optionButton}>
+          <Text style={styles.optionText}>Alterar Idioma</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btn}>
-          <Text>Alterar Foto</Text>
+
+        <TouchableOpacity onPress={()=> alterarSenhaTela()} style={styles.optionButton}>
+          <Text style={styles.optionText}>Alterar Senha</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text>Alterar Senha</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btn} onPress={deleteUser}>
-          <Text>Deletar Conta</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btn} onPress={handleLogout}>
-          <Text>Sair</Text>
+        <TouchableOpacity style={styles.optionButton}>
+          <Text style={styles.optionText}>Sair</Text>
         </TouchableOpacity>
       </View>
       <Navbar activeRoute="/perfil" />
@@ -212,25 +195,27 @@ const Perfil: React.FC = () => {
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#2196f3',
     padding: 8,
   },
   nmUser: {
     margin: 12,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   imgUser: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 120,
+    height: 120,
+    borderRadius: 60, // Circular
+    borderWidth: 2,
+    borderColor: '#fff', // Amarelo
+    marginBottom: 6,
   },
   btn: {
     backgroundColor: 'red',
@@ -257,6 +242,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
+  },
+  optionsContainer: {
+    width: '90%',
+  },
+  optionButton: {
+    flexDirection: 'row', // Ícone e texto lado a lado
+    alignItems: 'center',
+    backgroundColor:'#fff',
+    padding: 15,
+    borderRadius: 8,
+    marginVertical: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3, // Sombras para Android
+  },
+  optionText: {
+    fontSize: 16,
+    marginLeft: 12,
+    alignItems:'center',
   },
 });
 

@@ -6,11 +6,10 @@ const Navbar = ({ activeRoute }) => {
   const router = useRouter();
 
   const navItems = [
-    { screen: '/home', label: 'Início', /*icon: require('@/assets/images/icon-home.png')*/ },
-    { screen: '/consumo', label: 'Consumo', /*icon: require('@/assets/images/icon-consumo.png')*/ },
-    { screen: '/metas', label: 'Metas', /*icon: require('@/assets/images/icon-meta.png')*/ },
-    { screen: '/perfil', label: 'Perfil', /*icon: require('@/assets/images/icon-perfil.png')*/ },
-    { screen: '/aparelhos', label: 'Aparelhos', /*icon: require('@/assets/images/icon-aparelho.png')*/ },
+    { screen: '/home', label: 'Início', icon: require('./../assets/icon-home.png')},
+    { screen: '/consumo', label: 'Consumo', icon: require('./../assets/icon-consumo.png') },
+    { screen: '/perfil', label: 'Perfil', icon: require('./../assets/icon-perfil.png') },
+    { screen: '/aparelhos', label: 'Aparelhos', icon: require('./../assets/icon-aparelho.png') },
   ];
 
   const navigateTo = (screen) => {

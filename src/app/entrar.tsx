@@ -17,50 +17,59 @@ const Login = () => {
   const [senha, setSenha] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const router = useRouter();
+  const [ocultar, setOcultar] = useState(false);
 
   async function doLogin() {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+  
     // Validação do email
-    if (email && !emailPattern.test(email)) {
+    if (!emailPattern.test(email)) {
       Alert.alert('Erro', 'Por favor, insira um email válido.');
       return;
     }
-
-    // Enviar requisição para o servidor
-    let req = await fetch(config.urlRootNode +'login', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email,
-        senha: senha,
-      }),
-    });
-
-    let res = await req.json();
-    Keyboard.dismiss();
-
-    if ( res) {
-      let usuarioData =await AsyncStorage.setItem('usuarioData', JSON.stringify(res));
-      let resData=await AsyncStorage.getItem('usuarioData');
-      setMessage(res);
-      router.replace('/home');
-      console.log(res);
-    }else{
-      await AsyncStorage.clear();
-        setMessage(res);
-        setTimeout(() => {
-          setMessage('');
-        }, 5000);
+  
+    if (!email || !senha) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
+  
+    try {
+      const response = await fetch(`${config.urlRootNode}login`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email.trim(), senha: senha.trim() }),
+      });
+  
+      // Verificar se a requisição foi bem-sucedida
+      if (!response.ok) {
+        const errorData = await response.json();
+        Alert.alert('Erro', errorData.message || 'Falha ao fazer login.');
+        return;
       }
+  
+      const data = await response.json();
+      Keyboard.dismiss();
+  
+      if (data.success) {
+        await AsyncStorage.setItem('usuarioData', JSON.stringify(data.user));
+        Alert.alert('Sucesso', data.message);
+        router.push('/home'); // Navegar para a página inicial
+      } else {
+        Alert.alert('Erro', data.message || 'Credenciais inválidas.');
+      }
+    } catch (error) {
+      console.error('Erro ao tentar login:', error);
+      Alert.alert('Erro', 'Não foi possível conectar ao servidor.');
+    }
   }
-
+  
   // Função para lidar com o esqueci minha senha
   const handleForgotsenha = () => {
     Alert.alert('Esqueci minha senha', 'Redirecionando para recuperação de senha...');
+    router.replace('/registro');
   };
 
   return (
@@ -84,13 +93,14 @@ const Login = () => {
         <TextInput
           style={styles.input}
           placeholder="Senha"
-          secureTextEntry={true}
+          secureTextEntry={!ocultar}
           autoCapitalize="none"
           onChangeText={(text) => setSenha(text)}
           value={senha || ''}
           accessible={true}
           accessibilityLabel="Senha"
         />
+        <TouchableOpacity onPress={()=> setOcultar(!ocultar)}><Text style={{color:'#fff', fontWeight:'bold',}}>{ocultar ? "Ocultar senha" : "Exibir senha"}</Text></TouchableOpacity>
       </View>
       <View>
         <Button
@@ -100,7 +110,7 @@ const Login = () => {
           onPress={doLogin}
         />
 
-        <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Esqueci minha senha">
+        <TouchableOpacity onPress={(handleForgotsenha)} accessible={true} accessibilityLabel="Esqueci minha senha">
           <Text style={styles.forgotsenha}>Esqueci minha senha</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Não possuo conta">

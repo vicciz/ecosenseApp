@@ -29,44 +29,62 @@ app.post('/create',async(req, res) => {
     }
   });
 
-  // Routes
-app.post('/login',async(req, res) => {
+// Rotas
+app.post('/login', async (req, res) => {
   try {
-    let reqs = await models.Usuario.findOne({
-      where:{
-        'email':req.body.email,
-        'senha': req.body.senha
-      }
-    }); 
-    console.log(reqs);
-    if (reqs === null) {
-      res.send(JSON.stringify('Email ou senha incorreto!'));
-    }else{
-      res.send(JSON.stringify('Entrada efetuada com sucesso!!!'));
+    const { email, senha } = req.body;
+
+    const user = await models.Usuario.findOne({
+      where: {
+        email: email,
+        senha: senha, // Idealmente, a senha deveria ser armazenada com hash e comparada com bcrypt.
+      },
+    });
+
+    if (!user) {
+      // Resposta para credenciais inválidas
+      return res.status(401).json({ success: false, message: 'Email ou senha incorretos!' });
     }
+
+    // Resposta para sucesso no login
+    return res.json({
+      success: true,
+      message: 'Login realizado com sucesso!',
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        sobrenome: user.sobrenome,
+      },
+    });
   } catch (error) {
-    console.error('Erro ao cadastrar usuário:', error);
-    res.status(500).json({ error: 'Erro interno no servidor.' });
+    console.error('Erro no login:', error);
+    res.status(500).json({ success: false, error: 'Erro interno no servidor.' });
   }
 });
 
+
   // Rota para atualizar a senha
-  app.put('/attsenha', async (req, res) => {
+  app.put('/verifyPass', async (req, res) => {
     let response=await models.Usuario.findOne({
       where:{
         id:req.body.id,
         senha:req.body.senhaAntiga
       }
     });
+    console.log(req.body.id);
+      console.log(req.body.senhaAntiga);
+      console.log(req.body.novaSenha);
+      console.log(req.body.confNovaSenha);
     if(response === null){
-      res.send(JSON.stringfy('Senha antiga não confere'));
+      //error:'Senha antiga não confere'
     }else{
       if(req.body.novaSenha === req.body.confNovaSenha){
         response.senha = req.body.novaSenha;
         response.save();
-        res.send(JSON.stringfy('Senha atualizada com sucesso!'));
+        //message:'Senha atualizada com sucesso!'
       }else{
-        res.send(JSON.stringfy('Nova senha e confirmaçãonão conferem!'));
+        //console.error('Nova senha e confirmação não conferem!', error);
       }
     }
   });
