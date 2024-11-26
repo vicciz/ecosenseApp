@@ -87,6 +87,37 @@ app.post('/login', async (req, res) => {
         //console.error('Nova senha e confirmação não conferem!', error);
       }
     }
+
+      // Deletar usuário
+app.delete('/deleteUser', async (req, res) => {
+  try {
+    // Verificar se o ID foi enviado no corpo da requisição
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).json({ status: 'error', message: 'ID do usuário não fornecido.' });
+    }
+
+    // Deletar o usuário usando Sequelize
+    const response = await models.Usuario.destroy({
+      where: {
+        id: id,
+      },
+    });
+
+    // Verificar se algum registro foi deletado
+    if (response > 0) {
+      console.log(`Usuário com ID ${id} deletado com sucesso.`);
+      return res.status(200).json({ status: 'success', message: 'Usuário deletado com sucesso!' });
+    } else {
+      console.log(`Usuário com ID ${id} não encontrado.`);
+      return res.status(404).json({ status: 'error', message: 'Usuário não encontrado.' });
+    }
+  } catch (error) {
+    console.error('Erro ao deletar usuário:', error);
+    return res.status(500).json({ status: 'error', message: 'Erro interno no servidor.' });
+  }
+});
+
   });
   
     // Start server
