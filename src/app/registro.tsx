@@ -9,11 +9,14 @@ const CadastroFormulario = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [exibirSenha, setExibirSenha] = useState(false);
 
   // Controle do Modal
   const [modalVisible, setModalVisible] = useState(false);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  // Validação de campos
   const validarCadastro = () => {
     if (!firstName.trim() || !lastName.trim() || !email.trim() || !senha.trim()) {
       Alert.alert('Validação', 'Por favor, preencha todos os campos.');
@@ -27,11 +30,14 @@ const CadastroFormulario = () => {
     setModalVisible(false); // Fecha o modal
   };
 
+  // Registro no backend
   async function registro() {
-      let reqs = await fetch(config.urlRootNode+'create',{
+    setLoading(true); // Exibe carregamento
+    try {
+      const reqs = await fetch(config.urlRootNode + 'create', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -41,29 +47,37 @@ const CadastroFormulario = () => {
           senha: senha,
         }),
       });
-      let ress=await reqs.json();
-      setMessage(ress);
-  };
+
+      const ress = await reqs.json();
+      setMessage(ress.message || 'Cadastro realizado com sucesso!');
+      setModalVisible(false); // Fecha o modal
+    } catch (error) {
+      setMessage('Erro ao cadastrar. Tente novamente.');
+    } finally {
+      setLoading(false); // Finaliza carregamento
+    }
+  }
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
+        {/* Mensagem de resposta */}
+        {message && <Text style={styles.responseMessage}>{message}</Text>}
 
-      {message && <Text style={{color:'yellow', fontSize:18}}>{JSON.stringify(message)}</Text>}
-
-        <Text style={styles.title}>Preencha os campos para prosseguir </Text>
+        {/* Formulário */}
+        <Text style={styles.title}>Preencha os campos para prosseguir</Text>
 
         <TextInput
           style={styles.input}
           placeholder="Nome"
           value={firstName}
-          onChangeText={(text)=>setFirstName(text)}
+          onChangeText={(text) => setFirstName(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Sobrenome"
           value={lastName}
-          onChangeText={(text)=>setLastName(text)}
+          onChangeText={(text) => setLastName(text)}
         />
         <TextInput
           style={styles.input}
@@ -71,55 +85,66 @@ const CadastroFormulario = () => {
           placeholder="E-mail"
           autoCapitalize="none"
           value={email}
-          onChangeText={(text)=>setEmail(text)}
+          onChangeText={(text) => setEmail(text)}
         />
         <TextInput
           style={styles.input}
-          secureTextEntry
+          secureTextEntry={!exibirSenha}
           placeholder="Senha"
           autoCapitalize="none"
           value={senha}
-          onChangeText={(text)=>setSenha(text)}
+          onChangeText={(text) => setSenha(text)}
         />
 
-<Button
-  titulo="Avançar"
-  cor="#0056b3"
-  icone={null}
-  onPress={validarCadastro}
-/>
+        {/* Botão para alternar exibição de senha */}
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={() => setExibirSenha(!exibirSenha)}
+        >
+          <Text style={styles.toggleButtonText}>
+            {exibirSenha ? 'Ocultar senha' : 'Exibir senha'}
+          </Text>
+        </TouchableOpacity>
 
-<Modal
-  visible={modalVisible}
-  animationType="slide"
-  transparent={true}
-  onRequestClose={cancelarCadastro}
->
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>Cheque os seus dados</Text>
-      <Text style={styles.dados}>Nome: {firstName} {lastName}</Text>
-      <Text style={styles.dados}>E-mail: {email}</Text>
-
-      <View style={styles.modalButtons}>
+        {/* Botão para avançar */}
         <Button
-          titulo="Cancelar"
+          titulo="Avançar"
           cor="#0056b3"
           icone={null}
-          onPress={cancelarCadastro}
+          onPress={validarCadastro}
         />
 
-        <Button
-          titulo="Enviar"
-          cor="#0056b3"
-          icone={null}
-          onPress={registro}
-        />
-      </View>
-    </View>
-  </View>
-</Modal>
+        {/* Modal para confirmação */}
+        <Modal
+          visible={modalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={cancelarCadastro}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Cheque os seus dados</Text>
+              <Text style={styles.dados}>Nome: {firstName} {lastName}</Text>
+              <Text style={styles.dados}>E-mail: {email}</Text>
 
+              <View style={styles.modalButtons}>
+                <Button
+                  titulo="Cancelar"
+                  cor="#0056b3"
+                  icone={null}
+                  onPress={cancelarCadastro}
+                />
+                <Button
+                  titulo={loading ? 'Enviando...' : 'Enviar'}
+                  cor="#0056b3"
+                  icone={null}
+                  onPress={registro}
+                  disabled={loading}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -137,9 +162,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color:'#fff',
-    textAlign: 'center'
-    
+    color: '#fff',
+    textAlign: 'center',
   },
   input: {
     height: 50,
@@ -151,19 +175,18 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     width: '100%',
   },
-  botao: {
-    backgroundColor: '#6200EE',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginVertical: 10,
-    maxWidth: 320,
-    alignItems: 'center',
+  toggleButton: {
+    alignSelf: 'flex-start',
+    marginBottom: 15,
   },
-  txtbotao: {
-    color: '#FFF',
-    fontSize: 16,
+  toggleButtonText: {
+    color: '#fff',
     fontWeight: 'bold',
+  },
+  responseMessage: {
+    color: 'yellow',
+    fontSize: 18,
+    marginBottom: 10,
   },
   modalContainer: {
     flex: 1,
