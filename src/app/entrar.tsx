@@ -18,21 +18,23 @@ const Login = () => {
   const [message, setMessage] = useState('');
   const router = useRouter();
   const [ocultar, setOcultar] = useState(false);
+  const [loading, setLoading] = useState(false); // Estado para o carregamento
 
   async function doLogin() {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
+
     // Validação do email
-    if (!emailPattern.test(email)) {
+    if (!emailPattern.test(email || '')) {
       Alert.alert('Erro', 'Por favor, insira um email válido.');
       return;
     }
-  
+
     if (!email || !senha) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
-  
+
+    setLoading(true); // Ativa o estado de carregamento
     try {
       const response = await fetch(`${config.urlRootNode}login`, {
         method: 'POST',
@@ -42,17 +44,18 @@ const Login = () => {
         },
         body: JSON.stringify({ email: email.trim(), senha: senha.trim() }),
       });
-  
+
       // Verificar se a requisição foi bem-sucedida
       if (!response.ok) {
         const errorData = await response.json();
         Alert.alert('Erro', errorData.message || 'Falha ao fazer login.');
+        setLoading(false); // Desativa o carregamento
         return;
       }
-  
+
       const data = await response.json();
       Keyboard.dismiss();
-  
+
       if (data.success) {
         await AsyncStorage.setItem('usuarioData', JSON.stringify(data.user));
         Alert.alert('Sucesso', data.message);
@@ -63,9 +66,11 @@ const Login = () => {
     } catch (error) {
       console.error('Erro ao tentar login:', error);
       Alert.alert('Erro', 'Não foi possível conectar ao servidor.');
+    } finally {
+      setLoading(false); // Desativa o carregamento
     }
   }
-  
+
   // Função para lidar com o esqueci minha senha
   const handleForgotsenha = () => {
     Alert.alert('Esqueci minha senha', 'Redirecionando para recuperação de senha...');
@@ -100,17 +105,20 @@ const Login = () => {
           accessible={true}
           accessibilityLabel="Senha"
         />
-        <TouchableOpacity onPress={()=> setOcultar(!ocultar)}><Text style={{color:'#fff', fontWeight:'bold',}}>{ocultar ? "Ocultar senha" : "Exibir senha"}</Text></TouchableOpacity>
+        <TouchableOpacity style={{ alignItems: 'flex-start' }} onPress={() => setOcultar(!ocultar)}>
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>{ocultar ? 'Ocultar senha' : 'Exibir senha'}</Text>
+        </TouchableOpacity>
       </View>
       <View>
         <Button
-          titulo="Entrar"
+          titulo={loading ? 'Carregando...' : 'Entrar'} // Alteração no texto do botão
           cor="#0056b3"
           icone={null}
           onPress={doLogin}
+          disabled={loading} // Desativa o botão durante o carregamento
         />
 
-        <TouchableOpacity onPress={(handleForgotsenha)} accessible={true} accessibilityLabel="Esqueci minha senha">
+        <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Esqueci minha senha">
           <Text style={styles.forgotsenha}>Esqueci minha senha</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Não possuo conta">
