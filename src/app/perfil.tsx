@@ -53,6 +53,9 @@ const Perfil: React.FC = () => {
     try {
       const response = await fetch(`${config.urlRootNode}deleteUser`, {
         method: 'DELETE',
+        body: JSON.stringify({
+          id: idUser,
+        }),
       });
 
       const result = await response.json();
