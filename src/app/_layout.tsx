@@ -10,6 +10,12 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
+        name="index"
+        options={{
+          headerShown: false,  // Cabeçalho oculto nesta tela
+        }}
+      />
+      <Stack.Screen
         name="registro"
         options={{
           headerShown: false,  // Cabeçalho oculto nesta tela

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, SafeAreaView, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Text, SafeAreaView, View, StyleSheet, Image, TouchableOpacity, BackHandler } from 'react-native';
 import Button from '../components/button';
 import { useRouter } from 'expo-router';
 
@@ -10,6 +10,10 @@ const Recepcao = () => {
   const routes = {
     registro: '/registro',
     entrar: '/entrar',
+  };
+
+  const closeApp = () =>{
+    BackHandler.exitApp();
   };
 
   const logo = require('../assets/logoClaro.png');
@@ -31,7 +35,7 @@ const Recepcao = () => {
             titulo="Sair"
             cor="#0056b3"
             icone={null}
-            onPress={() => router.push(routes.registro)}
+            onPress={closeApp}
           />
           <Button
             titulo="Entrar"

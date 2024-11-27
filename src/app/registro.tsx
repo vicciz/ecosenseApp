@@ -11,6 +11,8 @@ const CadastroFormulario = () => {
   const [senha, setSenha] = useState('');
   const [exibirSenha, setExibirSenha] = useState(false);
 
+
+  
   // Controle do Modal
   const [modalVisible, setModalVisible] = useState(false);
   const [message, setMessage] = useState('');

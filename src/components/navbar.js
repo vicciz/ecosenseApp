@@ -7,9 +7,9 @@ const Navbar = ({ activeRoute }) => {
 
   const navItems = [
     { screen: '/home', label: 'Início', icon: require('./../assets/icon-home.png')},
+    { screen: '/aparelhos', label: 'Aparelhos', icon: require('./../assets/icon-aparelho.png') },
     { screen: '/consumo', label: 'Consumo', icon: require('./../assets/icon-consumo.png') },
     { screen: '/perfil', label: 'Perfil', icon: require('./../assets/icon-perfil.png') },
-    { screen: '/aparelhos', label: 'Aparelhos', icon: require('./../assets/icon-aparelho.png') },
   ];
 
   const navigateTo = (screen) => {

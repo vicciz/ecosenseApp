@@ -19,7 +19,7 @@ const Login = () => {
   const router = useRouter();
   const [ocultar, setOcultar] = useState(false);
   const [loading, setLoading] = useState(false); // Estado para o carregamento
-
+ 
   async function doLogin() {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
   Pressable,
+  
 } from 'react-native';
 import Navbar from './../components/navbar';
 import Header from './../components/header';
@@ -30,6 +31,7 @@ const TelaHome: React.FC = () => {
   const [kwh, setKwh] = useState<string>('');
   const [nome, setNome] = useState<string>('');
   const [modalImpostos, setModalImpostos] = useState<boolean>(false);
+  const [tempo, setTempo] = '00:00:00';
 
   const [impostos, setImpostos] = useState<Imposto[]>([
     { id: 1, label: 'Imposto 1', value: 400, checked: false },
@@ -40,6 +42,7 @@ const TelaHome: React.FC = () => {
     { id: 6, label: 'Imposto 6', value: 25, checked: false },
   ]);
 
+  
   const calcularRS = (): string => {
     const tarifa = parseFloat(vlImposto.replace(',', '.')) || 0;
     const consumo = parseFloat(kwh) || 0;
@@ -86,6 +89,10 @@ const TelaHome: React.FC = () => {
         <View style={styles.content}>
           <Text style={styles.info1}>O consumo atual é de {kwh} kWh,</Text>
           <Text style={styles.info2}>R$ {calcularRS()}</Text>
+
+          <View style={{marginVertical: 10}}>
+            <Text style={{fontSize: 12, color:'white', }}>Tempo decorrido: {tempo}</Text>
+          </View>
         </View>
         <Linha style={undefined} />
         <View style={styles.controle}>
