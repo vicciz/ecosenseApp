@@ -1,222 +1,95 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import config from '../../config/config.json';
+import React from 'react';
+import { Text, SafeAreaView, View, StyleSheet, Image, TouchableOpacity, BackHandler } from 'react-native';
 import Button from '../components/button';
+import { useRouter } from 'expo-router';
 
-const CadastroFormulario = () => {
-  // Armazenamento de dados
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [exibirSenha, setExibirSenha] = useState(false);
+const Recepcao = () => {
+  const router = useRouter();
 
-
-  
-  // Controle do Modal
-  const [modalVisible, setModalVisible] = useState(false);
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  // Validação de campos
-  const validarCadastro = () => {
-    if (!firstName.trim() || !lastName.trim() || !email.trim() || !senha.trim()) {
-      Alert.alert('Validação', 'Por favor, preencha todos os campos.');
-      return;
-    }
-
-    setModalVisible(true); // Exibe o modal para confirmação
+  const closeApp = () =>{
+    BackHandler.exitApp();
   };
 
-  const cancelarCadastro = () => {
-    setModalVisible(false); // Fecha o modal
-  };
-
-  // Registro no backend
-  async function registro() {
-    setLoading(true); // Exibe carregamento
-    try {
-      const reqs = await fetch(config.urlRootNode + 'create', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nome: firstName,
-          sobrenome: lastName,
-          email: email,
-          senha: senha,
-        }),
-      });
-
-      const ress = await reqs.json();
-      setMessage(ress.message || 'Cadastro realizado com sucesso!');
-      setModalVisible(false); // Fecha o modal
-    } catch (error) {
-      setMessage('Erro ao cadastrar. Tente novamente.');
-    } finally {
-      setLoading(false); // Finaliza carregamento
-    }
-  }
+  const logo = require('../assets/logoClaro.png');
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.container}>
-        {/* Mensagem de resposta */}
-        {message && <Text style={styles.responseMessage}>{message}</Text>}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        {/* Logo */}
+        <Image style={styles.logo} source={logo} />
+        
+        {/* Mensagem de boas-vindas */}
+        <Text style={styles.welcomeText}>
+          Seja bem-vindo,{'\n'}faça login ou cadastre-se
+        </Text>
 
-        {/* Formulário */}
-        <Text style={styles.title}>Preencha os campos para prosseguir</Text>
+        {/* Botões */}
+        <View style={styles.navigation}>
+          <Button
+            titulo="Sair"
+            cor="#0056b3"
+            icone={null}
+            onPress={closeApp}
+          />
+          <Button
+            titulo="Entrar"
+            cor="#21bf9f"
+            icone={null}
+            onPress={() => router.push('/entrar')}
+          />
+        </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Nome"
-          value={firstName}
-          onChangeText={(text) => setFirstName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Sobrenome"
-          value={lastName}
-          onChangeText={(text) => setLastName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          keyboardType="email-address"
-          placeholder="E-mail"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput
-          style={styles.input}
-          secureTextEntry={!exibirSenha}
-          placeholder="Senha"
-          autoCapitalize="none"
-          value={senha}
-          onChangeText={(text) => setSenha(text)}
-        />
-
-        {/* Botão para alternar exibição de senha */}
+        {/* Link de cadastro */}
         <TouchableOpacity
-          style={styles.toggleButton}
-          onPress={() => setExibirSenha(!exibirSenha)}
+          style={styles.registerLink}
+          onPress={() => router.push('/registro')}
         >
-          <Text style={styles.toggleButtonText}>
-            {exibirSenha ? 'Ocultar senha' : 'Exibir senha'}
-          </Text>
+          <Text style={styles.registerText}>Não possui conta? Cadastre-se</Text>
         </TouchableOpacity>
-
-        {/* Botão para avançar */}
-        <Button
-          titulo="Avançar"
-          cor="#0056b3"
-          icone={null}
-          onPress={validarCadastro}
-        />
-
-        {/* Modal para confirmação */}
-        <Modal
-          visible={modalVisible}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={cancelarCadastro}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Cheque os seus dados</Text>
-              <Text style={styles.dados}>Nome: {firstName} {lastName}</Text>
-              <Text style={styles.dados}>E-mail: {email}</Text>
-
-              <View style={styles.modalButtons}>
-                <Button
-                  titulo="Cancelar"
-                  cor="#0056b3"
-                  icone={null}
-                  onPress={cancelarCadastro}
-                />
-                <Button
-                  titulo={loading ? 'Enviando...' : 'Enviar'}
-                  cor="#0056b3"
-                  icone={null}
-                  onPress={registro}
-                  disabled={loading}
-                />
-              </View>
-            </View>
-          </View>
-        </Modal>
       </View>
-    </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2196F3',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    backgroundColor: '#2196F3',
+    padding: 16,
   },
-  title: {
-    fontSize: 24,
+  content: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    borderRadius: 100,
+    marginBottom: 20,
+  },
+  welcomeText: {
+    fontSize: 20,
+    textAlign: 'center',
+    color: 'white',
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#fff',
-    textAlign: 'center',
   },
-  input: {
-    height: 50,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    width: '100%',
-  },
-  toggleButton: {
-    alignSelf: 'flex-start',
-    marginBottom: 15,
-  },
-  toggleButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  responseMessage: {
-    color: 'yellow',
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#FFF',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  dados: {
-    fontSize: 16,
-    marginVertical: 5,
-  },
-  modalButtons: {
+  navigation: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     width: '100%',
+    marginVertical: 10,
+  },
+  registerLink: {
+    marginTop: 15,
+  },
+  registerText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
-export default CadastroFormulario;
+export default Recepcao;
