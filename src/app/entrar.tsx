@@ -19,7 +19,7 @@ const Login = () => {
   const router = useRouter();
   const [ocultar, setOcultar] = useState(false);
   const [loading, setLoading] = useState(false); // Estado para o carregamento
- 
+
   async function doLogin() {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -106,23 +106,26 @@ const Login = () => {
           accessibilityLabel="Senha"
         />
         <TouchableOpacity style={{ alignItems: 'flex-start' }} onPress={() => setOcultar(!ocultar)}>
-          <Text style={{ color: '#fff', fontWeight: 'bold' }}>{ocultar ? 'Ocultar senha' : 'Exibir senha'}</Text>
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+            {ocultar ? 'Ocultar senha' : 'Exibir senha'} 👁️
+          </Text>
         </TouchableOpacity>
       </View>
       <View>
         <Button
-          titulo={loading ? 'Carregando...' : 'Entrar'} // Alteração no texto do botão
+          titulo={loading ? 'Carregando...' : 'Entrar'} // Mantém o texto "Carregando..."
           cor="#0056b3"
-          icone={null}
+          icone={null} // Você pode adicionar um ícone de carregamento aqui, se preferir
           onPress={doLogin}
           disabled={loading} // Desativa o botão durante o carregamento
+          style={loading ? styles.buttonLoading : undefined} // Adiciona estilo condicional para centralizar o texto
         />
 
         <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Esqueci minha senha">
           <Text style={styles.forgotsenha}>Esqueci minha senha</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Não possuo conta">
-          <Text style={styles.forgotsenha}>Não possuo conta</Text>
+        <TouchableOpacity onPress={handleForgotsenha} accessible={true} accessibilityLabel="Cadastrar">
+          <Text style={styles.forgotsenha}>Cadastrar</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -162,6 +165,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     textDecorationLine: 'underline',
+  },
+  buttonLoading: {
+    justifyContent: 'center', // Centraliza o conteúdo verticalmente
+    alignItems: 'center', // Centraliza o conteúdo horizontalmente
   },
 });
 

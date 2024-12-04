@@ -12,7 +12,7 @@ const Index = () => {
 
   useEffect(() => {
     if (isMounted) {
-      router.replace('/recepcao'); // Somente navega após o componente ser montado
+      router.replace('/home'); // Somente navega após o componente ser montado
     }
   }, [isMounted]);
 

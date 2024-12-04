@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import Navbar from '../components/navbar';
-import { LineChart, Grid, XAxis } from 'react-native-svg-charts';
-import * as shape from 'd3-shape';
+
 
 const TelaGraficos: React.FC = () => {
   const [consumoSemanal, setConsumoSemanal] = useState<number[]>([]);
@@ -17,22 +16,7 @@ const TelaGraficos: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Consumo dos Últimos 7 Dias</Text>
-        <LineChart
-          style={{ height: 200, width: '100%' }}
-          data={consumoSemanal}
-          svg={{ stroke: '#2196F3', strokeWidth: 2 }}
-          contentInset={{ top: 20, bottom: 20 }}
-          curve={shape.curveMonotoneX}
-        >
-          <Grid />
-        </LineChart>
-        <XAxis
-          style={{ marginTop: 10 }}
-          data={consumoSemanal}
-          formatLabel={(value, index) => `Dia ${index + 1}`}
-          contentInset={{ left: 10, right: 10 }}
-          svg={{ fontSize: 12, fill: '#333' }}
-        />
+
       </View>
 
       <View style={styles.info}>

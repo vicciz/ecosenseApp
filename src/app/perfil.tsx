@@ -163,7 +163,7 @@ const Perfil: React.FC = () => {
 
       {/* Modal para excluir a conta */}
       <Modal visible={modalDeleteVisible} animationType="slide">
-        <View>
+        <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>
             Todos os seus dados, incluindo aparelhos cadastrados, serão perdidos! Deseja continuar?
           </Text>
@@ -190,27 +190,29 @@ const Perfil: React.FC = () => {
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#2196f3',
-    padding: 8,
+    padding: 16,
   },
   nmUser: {
-    margin: 12,
+    marginVertical: 8, // Ajuste de margin
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
+    color: '#fff', // Cor da fonte para branco
   },
   imgUser: {
     width: 120,
     height: 120,
     borderRadius: 60, // Circular
     borderWidth: 2,
-    borderColor: '#fff', // Amarelo
-    marginBottom: 6,
+    borderColor: '#fff', // Branco
+    marginBottom: 16, // Ajuste de margin
   },
   btn: {
     backgroundColor: 'red',
@@ -221,7 +223,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor:"#2196F3",
+    backgroundColor: "#2196F3",
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -230,6 +232,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#fff', // Cor da fonte para branco
   },
   input: {
     height: 50,
@@ -247,7 +250,7 @@ const styles = StyleSheet.create({
   optionButton: {
     flexDirection: 'row', // Ícone e texto lado a lado
     alignItems: 'center',
-    backgroundColor:'#fff',
+    backgroundColor: '#fff',
     padding: 15,
     borderRadius: 8,
     marginVertical: 8,
@@ -260,9 +263,9 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     marginLeft: 12,
-    alignItems:'center',
+    color: '#333', // Cor do texto do botão
   },
-  opnav:{
+  opnav: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   }

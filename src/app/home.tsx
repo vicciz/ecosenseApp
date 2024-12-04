@@ -9,13 +9,14 @@ import {
   TouchableOpacity,
   Modal,
   Pressable,
-  
+  Image
 } from 'react-native';
 import Navbar from './../components/navbar';
 import Header from './../components/header';
 import Linha from './../components/linha';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/MaterialIcons';  // Importando ícone de usuário
 
 interface Imposto {
   id: number;
@@ -27,22 +28,21 @@ interface Imposto {
 const TelaHome: React.FC = () => {
   const router = useRouter();
 
-  const [vlImposto, setVlImposto] = useState<string>('');
-  const [kwh, setKwh] = useState<string>('');
-  const [nome, setNome] = useState<string>('');
-  const [modalImpostos, setModalImpostos] = useState<boolean>(false);
-  const [tempo, setTempo] = '00:00:00';
+  const [vlImposto, setVlImposto] = useState<string>(''); // Valor da tarifa
+  const [kwh, setKwh] = useState<string>(''); // Consumo em kWh
+  const [nome, setNome] = useState<string>(''); // Nome do usuário
+  const [modalImpostos, setModalImpostos] = useState<boolean>(false); // Controle do modal
+  const [tempo, setTempo] = useState('00:00:00'); // Tempo decorrido
 
   const [impostos, setImpostos] = useState<Imposto[]>([
-    { id: 1, label: 'Imposto 1', value: 400, checked: false },
-    { id: 2, label: 'Imposto 2', value: 300, checked: false },
-    { id: 3, label: 'Imposto 3', value: 200, checked: false },
-    { id: 4, label: 'Imposto 4', value: 100, checked: false },
-    { id: 5, label: 'Imposto 5', value: 50, checked: false },
-    { id: 6, label: 'Imposto 6', value: 25, checked: false },
+    { id: 1, label: 'Imposto 1 (R$ 400)', value: 400, checked: false },
+    { id: 2, label: 'Imposto 2 (R$ 300)', value: 300, checked: false },
+    { id: 3, label: 'Imposto 3 (R$ 200)', value: 200, checked: false },
+    { id: 4, label: 'Imposto 4 (R$ 100)', value: 100, checked: false },
+    { id: 5, label: 'Imposto 5 (R$ 50)', value: 50, checked: false },
+    { id: 6, label: 'Imposto 6 (R$ 25)', value: 25, checked: false },
   ]);
 
-  
   const calcularRS = (): string => {
     const tarifa = parseFloat(vlImposto.replace(',', '.')) || 0;
     const consumo = parseFloat(kwh) || 0;
@@ -81,7 +81,10 @@ const TelaHome: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
+      {/* Substituindo o Header com ícone de usuário */}
+      <Header>
+        <Icon name="account-circle" size={40} color="#fff" />
+      </Header>
       <TouchableOpacity onPress={() => router.push('/consumo')}>
         <Text style={styles.textop}>Estatísticas</Text>
       </TouchableOpacity>
@@ -90,8 +93,10 @@ const TelaHome: React.FC = () => {
           <Text style={styles.info1}>O consumo atual é de {kwh} kWh,</Text>
           <Text style={styles.info2}>R$ {calcularRS()}</Text>
 
-          <View style={{marginVertical: 10}}>
-            <Text style={{fontSize: 12, color:'white', }}>Tempo decorrido: {tempo}</Text>
+          <View style={{ marginVertical: 10 }}>
+            <Text style={{ fontSize: 12, color: 'white' }}>
+              Tempo decorrido: {tempo}
+            </Text>
           </View>
         </View>
         <Linha style={undefined} />
@@ -130,10 +135,7 @@ const TelaHome: React.FC = () => {
                   onPress={() => toggleCheckbox(item.id)}
                 >
                   <View
-                    style={[
-                      styles.checkbox,
-                      item.checked && styles.checkboxChecked,
-                    ]}
+                    style={[styles.checkbox, item.checked && styles.checkboxChecked]}
                   />
                   <Text style={styles.checkboxLabel}>{item.label}</Text>
                 </Pressable>
@@ -146,6 +148,7 @@ const TelaHome: React.FC = () => {
         </View>
       </ScrollView>
       <Navbar activeRoute="/home" />
+      
     </SafeAreaView>
   );
 };
@@ -167,8 +170,8 @@ const styles = StyleSheet.create({
     width: '80%',
     marginVertical: 10,
     alignSelf: 'center',
-    padding:12,
-    borderRadius:20,
+    padding: 12,
+    borderRadius: 20,
   },
   opnav: {
     flexDirection: 'row',
@@ -211,15 +214,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#fff',
   },
-  info1:{
+  info1: {
     color: 'white',
-    fontSize:24,
+    fontSize: 24,
   },
-  info2:{
+  info2: {
     color: 'white',
-    fontSize:54,
+    fontSize: 54,
   },
-
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -241,22 +243,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
   },
-  controle:{
-    justifyContent:'center',
-    alignItems:'center',
-    textAlign:'center'
+  controle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
   },
-  btnEstatistica:{
+  btnEstatistica: {
     justifyContent: 'center',
     alignItems: 'center',
     width: 150,
     height: 40,
     borderRadius: 8,
-    color:'black'
+    color: 'black',
   },
-  textop:{
-    color:'black',
-    margin:10,
+  textop: {
+    color: 'black',
+    margin: 10,
     fontSize: 18,
   },
 });
